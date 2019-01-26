@@ -1,0 +1,168 @@
+<html> 
+<head>
+	<title>Конные колесницы</title>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container text-center">
+		<div class="row">
+			<currency v-for="(currency, index) in currencies" :currency="currency" :index="index"></currency>
+		
+		
+			<!-- <chariot 
+				v-for="(chariot, index) in chariots"
+				:key="index"
+				:current="current"
+				:chariot="chariot"
+				@select="updateChariot">
+			</chariot> -->
+		</div> 
+		<!-- <pre>{{ $data }}</pre> -->
+	</div>
+</body> 
+
+<template id="currency">
+	<table class="table table-striped">
+		<tr>
+			<th>Валюта</th>
+			<th>Покупка</th>
+			<th>Продажа</th>
+			<th></th>
+		</tr>
+		<tr>
+			<td>
+				<input v-if="currency.editing" v-model="currency.buy" class="form-control">
+				<span v-else>{{ index }}</span>
+			</td>
+			<td>{{ currency.symbol + currency.buy }}</td>
+			<td>{{ currency.symbol + currency.sell }}</td>
+			<td>
+				<button type="button" @click="getValue(currency)" class="btn btn-default">Get value</button>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<!-- <template id="chariot">
+	<div class="text-center col-lg-4"> <p style="font-size: 40px;">
+		<h3>Конюшня: {{ chariot.name }} </h3>
+		<h4>Количество лошадей: {{ chariot.horses }}</h4>
+		<button type="button" class="btn btn-default" 
+			:disabled="isCurrent" 
+			@click="rideChariot(chariot)">{{ action }}
+		</button>
+	</div>
+</template>  --> 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+
+<script>
+	let bus = new Vue();
+
+	Vue.component('currency', {
+		template: '#currency',
+		props: ['currency', 'index'],
+		methods: {
+			getValue: function(currency) {
+				axios.get('https://blockchain.info/ticker')
+				.then(function (response) {
+					// let currenciesReady = response.data.map(function (currency) { 
+					// 	currency.editing = false;
+					// 		return currency
+					// 	});
+					Vue.set(vm, 'currencies', response.data);
+			    })
+				.catch(function (error) { 
+					console.log(error);
+				});
+			}
+		}
+	});
+
+	// Vue.component('chariot', {
+	// 	template: '#chariot',
+	// 	props: ['chariot', 'current'],
+	// 	methods: {
+	// 		rideChariot: function (chariot) {
+ //        		this.$emit('select', chariot)
+ //      		}
+	// 	},
+	// 	computed: {
+ //      // будет true, когда колесница имеет больше лошадей, чем текущая
+ //      hasMoreHorses: function () {
+ //        return this.current.horses < this.chariot.horses
+ //      },
+ //      // будет true, когда колесница является текущей
+ //      isCurrent: function () {
+ //        return this.current.name === this.chariot.name
+ //      },
+ //      // будет true, когда нет текущей колесницы
+ //      noChariot: function () {
+ //        return this.current.name === null;
+ //      },
+ //      // определить действие для каждой колесницы
+ //      action: function () {
+ //        var action;
+ //        if (this.noChariot) {
+ //          action = 'Выбрать колесницу'
+ //        } else if (this.isCurrent) {
+ //          action = 'В путь!'
+ //        } else if (this.hasMoreHorses) {
+ //          action = 'Нанять лошадей'
+ //        } else {
+ //          action = 'Отклонить лошадей'
+ //        }
+ //        return action;
+ //      }
+ //    }
+	// });
+
+	vm = new Vue({
+		el: '.container',
+		data: {
+			chariots: [
+				{
+					name: 'Эйлин',
+					horses: 1
+				},
+				{
+					name: 'Береннис',
+					horses: 2
+				},
+				{
+					name: 'Сондра',
+					horses: 3
+				},
+				{
+					name: 'Роберта',
+					horses: 4
+				}
+			],
+			current: {},
+			currencies: []
+		},
+		mounted: function () {
+			let vm = this;
+
+			axios.get('https://blockchain.info/ticker')
+				.then(function (response) {
+					// let currenciesReady = response.data.map(function (currency) { 
+					// 	currency.editing = false;
+					// 		return currency
+					// 	});
+					Vue.set(vm, 'currencies', response.data);
+			    })
+				.catch(function (error) { 
+					console.log(error);
+				});
+		},
+		methods: {
+			updateChariot: function (chariot) {
+				this.current = chariot;
+			}
+		}
+	});
+</script>
+</html>
